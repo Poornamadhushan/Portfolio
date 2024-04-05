@@ -345,6 +345,7 @@
 
       <!--CONTACT SECTION-->
 
+    
       <section class="contact" id="contact">
         <div class="container">
           <h1>Let's have a <strong>discussion</strong></h1>
@@ -352,13 +353,18 @@
             Please allow 24-48 hours for a response. Thank
             you!
           </p>
+          <div id="result" class="result-message"></div> <!-- Added result div here -->
           <div>
-            <form  action="https://api.web3forms.com/submit" method="POST"
-              id="contact-form"
-              aria-label="Contact Form"
-            >
+            <form action="https://api.web3forms.com/submit" method="POST"
+            id="contact-form"  
+            aria-label="Contact Form"
+          >
               <div class="form-row">
                 <input type="hidden" name="access_key" value="36f1f62a-e733-4a2e-9b4f-756b43bc28b7">
+                <input 
+type="hidden"
+name="redirect" 
+value="https://web3forms.com/success?title=Message Submitted &desc=Thank You! Your Message has been submitted Successfully" />
                 <input
                   type="text"
                   name="name"
@@ -379,7 +385,7 @@
 
               <textarea
                 rows="6"
-                name="message"
+                name="phone"
                 class="form-input"
                 placeholder="Enter your message here..."
                 required
@@ -388,7 +394,7 @@
               ></textarea>
 
               <div class="form-button">
-                <button type="submit">
+                <button  type="submit"    >
                   Submit Your Message
                 </button>
               </div>
@@ -399,11 +405,57 @@
     </main>
     <footer>
       <div class="container footer-container">
-        <p>&copy; 2024 POORNA MADHUSHAN.com All rights reserved</p>
+        <p>&copy; 2024 Poorna Madhushan.com All rights reserved</p>
       </div>
     </footer>
-    <script src="./app.js"></script>
-   
+    <script src="app.js"></script>
+    <script>
+      const form = document.getElementById("contact-form"); // Updated to match the form id
+const result = document.getElementById("result");
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  
+  const formData = new FormData(form);
+  const object = Object.fromEntries(formData);
+  const json = JSON.stringify(object);
+  
+  result.innerHTML = "Please wait...";
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: json,
+  })
+    .then(async (response) => {
+      let json = await response.json();
+      if (response.status == 200) {
+        result.innerHTML = json.message;
+        result.classList.remove("text-gray-500");
+        result.classList.add("text-green-500");
+        form.reset(); // Reset the form after successful submission
+      } else {
+        console.log(response);
+        result.innerHTML = json.message;
+        result.classList.remove("text-gray-500");
+        result.classList.add("text-red-500");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      result.innerHTML = "Something went wrong!";
+    })
+    .then(function () {
+      setTimeout(() => {
+        result.style.display = "none";
+      }, 5000);
+    });
+});
+
     </script>
+  
   </body>
 </html>
